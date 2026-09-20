@@ -106,8 +106,20 @@ def get_embedding_model():
 
 
 def create_vector_store(splits):
+    valid_chunks = [
+        doc for doc in splits
+        if doc.page_content and doc.page_content.strip()
+    ]
+
+    if not valid_chunks:
+        st.error(
+            "No extractable text found in the uploaded document. "
+            "If this is a scanned PDF, please use a text-based PDF."
+        )
+        return None
+
     embeddings = get_embedding_model()
-    return Chroma.from_documents(documents=splits, embedding=embeddings)
+    return Chroma.from_documents(documents=valid_chunks, embedding=embeddings)
 
 
 # --- DOCUMENT PROCESSING TRIGGER ---
@@ -120,9 +132,10 @@ if uploaded_files:
             st.session_state.chunks = chunks
 
             vectorstore = create_vector_store(chunks)
-            st.session_state.retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+            if vectorstore is not None:
+                st.session_state.retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
 
-            st.success(f"Successfully processed {len(chunks)} text chunks into ChromaDB!")
+                st.success(f"Successfully processed {len(chunks)} text chunks into ChromaDB!")
 
 
 # --- QUESTION ANSWERING CHAIN ---
