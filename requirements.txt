@@ -3,8 +3,6 @@ langchain
 langchain-community
 langchain-core
 langchain-groq
-langchain-huggingface
-langchain-classic
 pypdf
 chromadb
 sentence-transformers
