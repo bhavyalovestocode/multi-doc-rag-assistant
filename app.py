@@ -54,7 +54,10 @@ st.write("Upload your PDFs in the sidebar, enter your Groq API Key, and ask ques
 # Sidebar Configuration
 with st.sidebar:
     st.header("⚙️ Configuration")
-    api_key = st.text_input("Enter Groq API Key:", type="password")
+    user_api_key = st.text_input("Enter Groq API Key (Optional if secret configured):", type="password")
+
+    # Priority: User input key > Streamlit Secret key
+    api_key = user_api_key or st.secrets.get("GROQ_API_KEY", "")
 
     selected_model = None
     if api_key:
